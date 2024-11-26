@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h2>MENU</h2>
+<!--<p>Selamat datang kembali, {{ nama_staff }} ({{ id_staff }})!</p>-->
+<div class="links">
+    <li><a href="{{ url_for('gantipwd') }}">Ganti Password</a></li>
+    <li><a href="{{ url_for('staff') }}">Staff</a></li>   
+    <li><a href="{{ url_for('anggota') }}">Anggota</a></li>    
+    <li><a href="{{ url_for('buku') }}">Buku</a></li>   
+    <li><a href="{{ url_for('peminjaman') }}">Peminjaman</a></li>   
+    <li><a href="{{ url_for('pengembalian') }}">Pengembalian</a></li>   
+</div> 
+
+{% endblock %}

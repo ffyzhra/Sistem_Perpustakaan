@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Buku</title>
+	<style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .message {
+            color: #d9534f; /* Bootstrap danger color */
+        }
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px; /* Space between rows */
+        }
+        
+        label {
+            margin-right: 10px; /* Space between label and input */
+            width: 150px; /* Fixed width for labels */
+        }
+    
+        input[type="text"],
+        input[type="number"] {
+            flex: 1; /* Allow input to take the remaining space */
+        }
+    </style> 
+	
+</head>
+<body>    
+    {% if msg %}
+        <p>{{ msg }}</p>
+    {% endif %}
+
+    <form method="POST">
+        <label for="idbuku">Pilih Nama Buku (ID Buku):</label>
+        <select name="idbuku" id="idbuku" required onchange="this.form.submit()">
+            <option value="">Select ID Buku</option>
+            {% for book in books %}
+                <option value="{{ book.id_buku }}" {% if selected_book and selected_book.id_buku == book.id_buku %}selected{% endif %}>{{ book.judul_buku }} (ID: {{ book.id_buku }})</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if selected_book %}
+        <form method="POST">
+            <h1>Detail Buku</h1>
+            <input type="hidden" name="idbuku" value="{{ selected_book.id_buku }}">
+    
+            <div class="form-group">
+                <label for="judulbuku">Judul Buku:</label>
+                <input type="text" name="judulbuku" id="judulbuku" value="{{ selected_book.judul_buku }}" required>
+            </div>
+    
+            <div class="form-group">
+                <label for="penulis">Penulis:</label>
+                <input type="text" name="penulis" id="penulis" value="{{ selected_book.penulis }}" required>
+            </div>
+    
+            <div class="form-group">
+                <label for="penerbit">Penerbit:</label>
+                <input type="text" name="penerbit" id="penerbit" value="{{ selected_book.penerbit }}" required>
+            </div>
+    
+            <div class="form-group">
+                <label for="tahunterbit">Tahun Terbit:</label>
+                <input type="text" name="tahunterbit" maxlength="4" id="tahunterbit" value="{{ selected_book.tahun_terbit }}" required>
+            </div>
+    
+            <div class="form-group">
+                <label for="jmlhalaman">Jumlah Halaman:</label>
+                <input type="number" name="jmlhalaman" id="jmlhalaman" value="{{ selected_book.jml_halaman }}" required>
+            </div>
+    
+            <div class="form-group">
+                <label for="jmlbuku">Jumlah Buku:</label>
+                <input type="number" name="jmlbuku" id="jmlbuku" value="{{ selected_book.jml_buku }}" required>
+            </div>
+    
+            <div class="form-group">
+                <label for="norak">No Rak:</label>
+                <input type="text" name="norak" id="norak" value="{{ selected_book.no_rak }}" required>
+            </div>
+
+            <button type="submit">Update Buku</button>            
+        </form>
+    {% endif %}
+    
+    <a href="{{ url_for('homestaff') }}">
+        <button>Tutup</button>
+    </a>
+</body>
+</html>

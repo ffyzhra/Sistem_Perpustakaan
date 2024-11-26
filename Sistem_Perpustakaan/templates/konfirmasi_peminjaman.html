@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Konfirmasi Peminjaman Buku Hari Ini</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .delete-btn {
+            color: red;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function deleteBorrowing(idPinjam, idBuku) {
+            if (confirm("Are you sure you want to cancel this borrowing record?")) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/delete_borrowing", true);
+                xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        var row = document.querySelector(`tr[data-id='${idPinjam}']`);
+                        if (row) {
+                            row.parentNode.removeChild(row);
+                        }
+                    } else {
+                        alert("Peminjaman Buku ini sudah di konfirmasi oleh Staff, Tidak bisa dihapus. Atau Anda kembalikan bukunya. Terima kasih.");
+                    }
+                };
+                
+                xhr.send(JSON.stringify({ id_pinjam: idPinjam, id_buku: idBuku }));
+            }
+        }        
+
+        function confirmed(idPinjam, idBuku) {
+            // Add your confirmation logic here
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/confirm_borrowing", true);  // Adjust the endpoint as needed
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    alert("Borrowing record confirmed successfully.");
+                    // Optionally, remove the row or update the UI as needed
+                    // Disable the button after successful confirmation
+                    var button = document.getElementById(`confirm-btn-${idPinjam}`);
+                    if (button) {
+                        button.disabled = true; // Disable the button
+                        button.innerText = "Confirm"; // Optionally change button text
+                    }
+                    // Disable the cancel button
+                    var cancelButton = document.getElementById(`cancel-btn-${idPinjam}`);
+                    if (cancelButton) {
+                        cancelButton.disabled = true; // Disable the cancel button
+                        cancelButton.innerText = "Batal"; // Optionally change button text
+                    }
+                    
+                } else {
+                    alert("Failed to confirm the borrowing record.");
+                }
+            };
+            
+            xhr.send(JSON.stringify({ id_pinjam: idPinjam, id_buku: idBuku }));
+        }
+    </script>
+</head>
+<body>
+    <p>Staff yang bertugas hari ini:</p>
+    <p>ID Staff: {{ id_staff }}</p>
+    <p>Nama: {{ nama_staff }}</p>
+    <h2>---------------------------------------------</h2>    
+
+    {% if msg %}
+        <div class="alert alert-warning">{{ msg }}</div>
+    {% endif %}
+
+    <form>
+        <h2>Konfirmasi Buku Yang Dipinjam oleh Anggota Hari Ini : {{ now_date }}</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Anggota</th>
+                    <th>Nama Anggota</th>
+                    <th>ID Peminjaman</th>
+                    <th>ID Buku</th>
+                    <th>Judul</th>
+                    <th>Penulis</th>
+                    <th>Penerbit</th>
+                    <th>Tahun Terbit</th>                    
+                    <th>Stock Buku</th>
+                    <th>No. Rak</th>
+                    <th>Staff Confirmation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in akunbuku %}
+                <tr data-id="{{ book.id_pinjam }}">
+                    <td>{{ book.id_anggota }}</td>
+                    <td>{{ book.nama_anggota}}</td>
+                    <td>{{ book.id_pinjam }}</td>
+                    <td>{{ book.id_buku }}</td>
+                    <td>{{ book.judul_buku }}</td>
+                    <td>{{ book.penulis }}</td>
+                    <td>{{ book.penerbit }}</td>
+                    <td>{{ book.tahun_terbit }}</td>                   
+                    <td>{{ book.jml_buku }}</td>
+                    <td>{{ book.no_rak }}</td>
+                    <td>
+                        {% if book.id_staff %} <!-- Check if id_staff is filled -->
+                            <button type="button" class="cancel-btn" disabled>Batal</button>
+                            <button type="button" class="confirm-btn" disabled>Confirm</button>
+                        {% else %}
+                            <button type="button" id="cancel-btn-{{ book.id_pinjam }}" class="cancel-btn" onclick="deleteBorrowing('{{ book.id_pinjam }}', '{{ book.id_buku }}')">Batal</button>
+                            <button type="button" id="confirm-btn-{{ book.id_pinjam }}" class="confirm-btn" onclick="confirmed('{{ book.id_pinjam }}', '{{ book.id_buku }}')">Confirm</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+    <br><br>
+    <a href="{{ url_for('homestaff') }}">
+        <button>Kembali</button>
+    </a>
+</body>
+</html>

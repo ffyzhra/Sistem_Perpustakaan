@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Perpus</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+	</head>
+	<body>
+		<div class="ganti password">
+			<h1>Ganti Password</h1>
+			<div class="links">				
+			</div> 
+			<form action="{{ url_for('gantipwd') }}" method="post">                
+                <table>
+                    <tr>
+                        <td>Id Staff:</td>
+                        <td>{{ account['id_staff'] }}</td>
+                    </tr>
+                </table>
+
+				<label for="passwordlama">
+					<i class="fas fa-lock"></i>
+				</label>
+				<input type="password" name="passwordlama" placeholder="Password Lama" id="passwordlama" required>
+
+                <label for="passwordbaru">
+					<i class="fas fa-lock"></i>
+				</label>
+				<input type="password" name="passwordbaru" placeholder="Password Baru" id="passwordbaru" required>
+
+				<div class="msg">{{ msg }}</div>
+				<input type="submit" value="Ganti Password">
+			</form>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,34 @@
+{% extends 'layoutstaff.html' %}
+
+{% block title %}Profil{% endblock %}
+
+{% block content %}
+<h2>Detail Profil Staff</h2>
+<div>
+    <p>Detail akun kamu ada dibawah ini:</p>
+    <table>
+        <tr>
+            <td>Id Staff</td>
+            <td>: {{ account['id_staff'] }}</td>
+        </tr>
+        <tr>
+            <td>Nama</td>
+            <td>: {{ account['nama_staff'] }}</td>
+        </tr>
+        <tr>
+            <td>No. Telp.</td>
+            <td>: {{ account['no_telp_staff'] }}</td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td>: {{ account['email_staff'] }}</td>
+        </tr>
+    </tr>
+    <tr>
+        <td>Shift</td>
+        <td>: {{ account['shift_kerja'] }}</td>
+    </tr>
+        
+    </table>
+</div>
+{% endblock %}

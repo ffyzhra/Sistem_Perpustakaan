@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Pendaftaran Buku</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+	</head>
+	<body>
+		<div class="register">
+			<h1>Input Data Buku</h1>			
+			<form action="{{ url_for('registrasibuku') }}" method="post" autocomplete="off">
+				<label for="idbuku">
+					<i class="fas fa-id-card"></i>
+				</label>
+				<input type="text" name="idbuku" placeholder="ID Buku contoh: AAAA9999" id="idbuku" required>
+
+				<label for="judulbuku">
+					<i class="fas fa-book"></i>
+				</label>
+				<input type="text" name="judulbuku" placeholder="Judul Buku" id="judulbuku" required>
+
+				<label for="penulis">
+					<i class="fas fa-book"></i>
+				</label>	
+				<input type="text" name="penulis" placeholder="Penulis" id="penulis" required>
+
+				<label for="penerbit">
+					<i class="fas fa-book"></i>
+				</label>				
+				<input type="text" name="penerbit" placeholder="Penerbit" id="penerbit" required>
+
+				<label for="tahunterbit">
+					<i class="fas fa-book"></i>
+				</label>
+				<input type="text" name="tahunterbit" placeholder="Tahun Terbit" id="tahunterbit" required>
+
+				<label for="jmlhalaman">
+					<i class="fas fa-book"></i>
+				</label>
+				<input type="text" name="jmlhalaman" placeholder="Jumlah Halaman" id="jmlhalaman" required>
+
+				<label for="jmlbuku">
+					<i class="fas fa-book"></i>
+				</label>				
+				<input type="text" name="jmlbuku" placeholder="Jumlah Buku" id="jmlbuku" required>
+
+				<label for="norak">
+					<i class="fas fa-book"></i>
+				</label>				
+				<input type="text" name="norak" placeholder="No. Rak contoh: A.999" id="norak" required>
+				
+								
+				<div class="msg">{{ msg }}</div>
+				<input type="submit" value="Simpan">  					
+				<div class="links">					
+					<a href="{{ url_for('homestaff') }}">Keluar</a>					
+				</div> 
+			</form>		
+			
+		</div>
+	</body>
+</html>

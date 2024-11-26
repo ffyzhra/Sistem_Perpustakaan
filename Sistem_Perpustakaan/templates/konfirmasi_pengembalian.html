@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Konfirmasi Pengembalian Buku</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .delete-btn {
+            color: red;
+            cursor: pointer;
+        }
+        #message {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            color: #333;
+            font-size: 16px;
+            border-radius: 5px;
+        }  
+        #message button:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+        
+    </style>
+    <script>
+        // Pass the Flask variables to JavaScript
+        var namaStaff = "{{ nama_staff }}";
+        var idStaff = "{{ id_staff }}";
+        function cekDenda(idPinjam, idBuku, idKembali, tanggalPinjam, tanggalKembali, idAnggota, namaAnggota, namaBuku, idStaff, namaStaff) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/cek_denda", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+            xhr.onload = function() {
+                var messageDiv = document.getElementById("message");
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    
+                    messageDiv.innerHTML = `
+                    <p>Tanggal: ${tanggalKembali}</p>
+                    <p>ID Pengembalian: ${idKembali}</p>
+                    <p>-----------------------------</p>  
+                    <p>ID Anggota: ${idAnggota}</p>
+                    <p>Nama Anggota: ${namaAnggota}</p>
+                    <p>-----------------------------</p>                    
+                    <p>ID Peminjaman: ${idPinjam}</p>                    
+                    <p>Nama Buku: ${namaBuku}</p>
+                    <p>Tanggal Pinjam: ${tanggalPinjam}</p>                    
+                    <p>Keterlambatan: ${response.keterlambatan} hari</p>
+                    <p>Dendanya: Rp. ${response.selisih}</p>
+                    <p>-----------------------------</p>
+                    <P>Mengetahui staff yang bertugas:</p>
+                    <h1></h1>
+                    <p><u>${namaStaff}(${idStaff})</u></p>
+                    <p></p>                    
+                    <button onclick="closeMessage()">Close</button> <!-- Close button -->
+                    `;
+                    messageDiv.style.display = "block"; // Show the message
+                } else {
+                    messageDiv.innerHTML = "<p>Error fetching fine data.</p>";
+                    messageDiv.style.display = "block"; // Show the error message
+                }
+            };
+
+            xhr.send(JSON.stringify({ id_pinjam: idPinjam, id_buku: idBuku, tanggal_pinjam: tanggalPinjam, tanggal_kembali: tanggalKembali }));
+        }
+        // Function to close the message
+        function closeMessage() {
+            var messageDiv = document.getElementById("message");
+            messageDiv.style.display = "none"; // Hide the message
+        }
+        // Function to print the returning borrowed book
+        function printMessage() {
+            var messageDiv = document.getElementById("message");
+            
+            // Create a new window for printing
+            var printWindow = window.open('', '_blank', 'height=600,width=400');
+            printWindow.document.write('<html><head><title>Print</title>');
+            printWindow.document.write(`
+                <style>
+                    @media print {
+                        @page {
+                            size: A5;
+                            margin: 10mm;
+                        }
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            font-size: 9px; /* Set font size to 9px */
+                        }
+                        table { width: 100%; border-collapse: collapse; }
+                        th, td { 
+                            padding: 8px; 
+                            text-align: left; 
+                            font-size: 9px; /* Ensure table text is also 9px */
+                        }
+                        th { background-color: #f2f2f2; }
+                        h2 { text-align: center; font-size: 12px; } /* Adjust header size if needed */
+                        .separator {
+                            border-bottom: 1px solid #ccc;
+                        }
+                    }
+                </style>
+            `);
+            printWindow.document.write('</head><body>');            
+        
+            // Format the content for printing
+            printWindow.document.write(`
+                <h2>Nota Pengembalian Buku</h2>
+                <table>
+                    <tr>
+                        <td>Tanggal</td>
+                        <td>${getValue("Tanggal")}</td>
+                    </tr>
+                    <tr>
+                        <td>ID Pengembalian</td>
+                        <td>${getValue("ID Pengembalian")}</td>
+                    </tr>
+                    <tr>
+                        <td>------------------</td> 
+                    </tr>
+                    <tr>
+                        <td>ID Anggota</td>
+                        <td>${getValue("ID Anggota")}</td>
+                    </tr>
+                    <tr>
+                        <td>Nama Anggota</td>
+                        <td>${getValue("Nama Anggota")}</td>
+                    </tr>  
+                    <tr>
+                        <td>------------------</td> 
+                    </tr>                  
+                    <tr>
+                        <td>ID Peminjaman</td>
+                        <td>${getValue("ID Peminjaman")}</td>
+                    </tr>                    
+                    <tr>
+                        <td>Nama Buku</td>
+                        <td>${getValue("Nama Buku")}</td>
+                    </tr>
+                    <tr>
+                        <td>Tanggal Pinjam</td>
+                        <td>${getValue("Tanggal Pinjam")}</td>
+                    </tr>
+                    <tr>
+                        <td>Keterlambatan</td>
+                        <td>${getValue("Keterlambatan")}</td>
+                    </tr>
+                    <tr>
+                        <td>Dendanya</td>
+                        <td>${getValue("Dendanya")}</td>
+                    </tr>
+                </table>
+                <p>Mengetahui staff yang bertugas:</p>
+                <br><br><br> <!-- Adds space between paragraphs -->
+                <p>(${namaStaff} / ${idStaff})</p>
+                <p>Terima Kasih.</p>
+            `);            
+            printWindow.document.write('</body></html>');
+            printWindow.document.close(); // Close the document
+            printWindow.print(); // Trigger the print dialog
+        }
+       
+        function getValue(label) {
+            var messageDiv = document.getElementById("message");
+            var regex = new RegExp(`<p>${label}:\\s*(.+?)</p>`, 'i'); // Adjust this regex if needed
+            var match = messageDiv.innerHTML.match(regex);
+            return match ? match[1].trim() : ''; // Return the matched value or an empty string
+        }       
+        // Function confirmation of borrowed book is return
+        function confirmed(idPinjam, idBuku, tanggalPinjam, tanggalKembali) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/returned_book", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    printMessage();
+                    alert("Returning book record confirmed successfully.");
+                    
+                    var button = document.getElementById(`confirm-btn-${idPinjam}`);
+                    if (button) {
+                        button.disabled = true;
+                        button.innerText = "Confirmed";
+                    }
+                } else {
+                    alert("Failed to confirm the borrowing record.");
+                }
+            };
+
+            xhr.send(JSON.stringify({ id_pinjam: idPinjam, id_buku: idBuku, tanggal_pinjam: tanggalPinjam, tanggal_kembali: tanggalKembali }));
+        }
+    </script>
+</head>
+<body>
+    <div id="message" style="text-align: center; display: none;"></div>
+    <p>Staff yang bertugas hari ini:</p>
+    <p>ID Staff: {{ id_staff }}</p>
+    <p>Nama: {{ nama_staff }}</p>
+    <h2>---------------------------------------------</h2>
+
+    {% if msg %}
+        <div class="alert alert-warning">{{ msg }}</div>
+    {% endif %}
+
+    <form>
+        <h2>Konfirmasi Pengembalian Buku Yang Dipinjam oleh Anggota: {{ now_date }}</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID pengembalian</th>
+                    <th>Tanggal Pinjam</th>                    
+                    <th>ID Anggota</th>
+                    <th>Nama Anggota</th>
+                    <th>ID Buku</th>
+                    <th>Judul</th>
+                    <th>Penulis</th>
+                    <th>Stock Buku</th>
+                    <th>No. Rak</th>
+                    <th>Staff Confirmation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in akunpengembalian %}
+                <tr data-id="{{ book.id_pinjam }}">
+                    <td>{{ book.id_kembali }}</td>
+                    <td>{{ book.tanggal_pinjam }}</td>                   
+                    <td>{{ book.id_anggota }}</td>
+                    <td>{{ book.nama_anggota }}</td>
+                    <td>{{ book.id_buku }}</td>
+                    <td>{{ book.judul_buku }}</td>
+                    <td>{{ book.penulis }}</td>
+                    <td>{{ book.jml_buku }}</td>
+                    <td>{{ book.no_rak }}</td>
+                    <td>
+                        {% if book.id_staff %}
+                            <button type="button" class="cek-denda-btn" disabled>Cek Denda</button>
+                            <button type="button" class="confirm-btn" disabled>Confirm</button>
+                        {% else %}
+                            <button type="button" id="cek-denda-btn-{{ book.id_pinjam }}" class="cek-denda-btn" 
+                            onclick="cekDenda('{{ book.id_pinjam }}', '{{ book.id_buku }}', '{{ book.id_kembali }}', '{{ book.tanggal_pinjam }}', '{{ book.tanggal_kembali }}', '{{ book.id_anggota }}', '{{ book.nama_anggota }}', '{{ book.judul_buku }}', '{{ id_staff }}', '{{ nama_staff }}')">
+                                Cek Denda
+                            </button>
+                            <button type="button" id="confirm-btn-{{ book.id_pinjam }}" class="confirm-btn" 
+                            onclick="confirmed('{{ book.id_pinjam }}', '{{ book.id_buku }}', '{{ book.tanggal_pinjam }}', '{{ book.tanggal_kembali }}')">
+                                Confirm
+                            </button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+    <br><br>
+    <a href="{{ url_for('homestaff') }}">
+        <button>Kembali</button>
+    </a>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Peminjaman pinjam</title>
+	<style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .message {
+            color: #d9534f; /* Bootstrap danger color */
+        }
+    </style> 
+	
+</head>
+<body>    
+    {% if msg %}
+        <p>{{ msg }}</p>
+    {% endif %}
+
+    <form method="POST">
+        <p><h1>Hari ini: <span id="tanggalwaktu"></span></h1></p>
+        <script>
+        var tw = new Date();
+        if (tw.getTimezoneOffset() == 0) (a=tw.getTime() + ( 7 *60*60*1000))
+        else (a=tw.getTime());
+        tw.setTime(a);
+        var tahun= tw.getFullYear ();
+        var hari= tw.getDay ();
+        var bulan= tw.getMonth ();
+        var tanggal= tw.getDate ();
+        var hariarray=new Array("Minggu,","Senin,","Selasa,","Rabu,","Kamis,","Jum'at,","Sabtu,");
+        var bulanarray=new Array("Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","Nopember","Desember");
+        document.getElementById("tanggalwaktu").innerHTML = hariarray[hari]+" "+tanggal+" "+bulanarray[bulan]+" "+tahun;
+        </script>
+
+        <label for="idbuku">Pilih Nama Buku (ID Buku):</label>
+        <select name="idbuku" id="idbuku" readonly onchange="this.form.submit()">
+            <option value="">Select ID Buku</option>
+            {% for book in books %}
+                <option value="{{ book.id_buku }}" {% if selected_book and selected_book.id_buku == book.id_buku %}selected{% endif %}>{{ book.judul_buku }} (ID: {{ book.id_buku }})</option>
+            {% endfor %}
+        </select>
+    
+    </form>
+
+    {% if selected_book %}
+    <form method="POST">
+        <h1>Detail Buku</h1>
+        <input type="hidden" name="idbuku" value="{{ selected_book.id_buku }}">
+
+        <div class="form-group">
+            <label for="judulbuku">Judul Buku:</label>
+            <div>{{ selected_book.judul_buku }}</div>
+        </div>
+
+        <div class="form-group">
+            <label for="penulis">Penulis:</label>
+            <div>{{ selected_book.penulis }}</div>
+        </div>
+
+        <div class="form-group">
+            <label for="penerbit">Penerbit:</label>
+            <div>{{ selected_book.penerbit }}</div>
+        </div>
+
+        <div class="form-group">
+            <label for="tahunterbit">Tahun Terbit:</label>
+            <div>{{ selected_book.tahun_terbit }}</div>
+        </div>
+
+        <div class="form-group">
+            <label for="jmlhalaman">Jumlah Halaman:</label>
+            <div>{{ selected_book.jml_halaman }}</div>
+        </div>
+
+        <div class="form-group">
+            <label for="jmlbuku">Jumlah Buku:</label>
+            <div>{{ selected_book.jml_buku }}</div>
+        </div>
+
+        <div class="form-group">
+            <label for="norak">No Rak:</label>
+            <div>{{ selected_book.no_rak }}</div>
+        </div>
+
+            <!--<button type="submit">Pilih</button>-->
+        </form>
+    {% endif %}
+
+<style>
+    .form-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px; /* Space between rows */
+    }
+    
+    label {
+        margin-right: 10px; /* Space between label and input */
+        width: 150px; /* Fixed width for labels */
+    }
+
+    input[type="text"],
+    input[type="number"] {
+        flex: 1; /* Allow input to take the remaining space */
+    }
+</style>
+    <a href="{{ url_for('homestaff') }}">
+        <button>Pilih</button>
+    </a>
+    <a href="{{ url_for('homestaff') }}">
+        <button>Tutup</button>
+    </a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tanggal</th>
+                <th>ID Buku</th>
+                <th>ID Anggota</th>    
+                <th>ID Staff</th>                            
+            </tr>
+        </thead>
+        <tbody>
+            {% for account in akunpinjam %}            
+                <td>{{ account['id_pinjam'] }}</td>
+                <td>{{ account['tanggal_pinjam'] }}</td>
+                <td>{{ account['id_anggota'] }}</td>
+                <td>{{ account['id_staff'] }}</td>                               
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

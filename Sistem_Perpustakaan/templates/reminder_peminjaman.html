@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reminder Peminjaman Buku Hari</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .delete-btn {
+            color: red;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        // Ensure the modal is hidden when the page loads
+        window.onload = function() {
+            document.getElementById("editModal").style.display = "none"; // Hide the modal   
+        };
+
+        function addEditReminder(idPinjam) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/editReminder", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        
+            xhr.onload = function() {
+                var remarksField = document.getElementById("remarks");
+                var button = document.getElementById(`save-btn`); // Adjust the button ID if necessary
+                var buttonCancel = document.getElementById(`cancel-btn`); // Adjust the button ID if necessary
+        
+                if (xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    remarksField.value = data.remarks; // Populate remarks if found
+                    remarksField.disabled = false;
+                    button.disabled = false; // Enable the button
+                    buttonCancel.disabled = false; 
+                    document.getElementById("edit-id_pinjam").value = idPinjam; // Keep track of id_pinjam
+                    document.getElementById("editModal").style.display = "block"; // Show the modal
+                } else {
+                    // No remarks found, set the field to blank and disable the button
+                    remarksField.value = ""; // Clear the remarks field
+                    remarksField.disabled = false; // Disable remarks field
+                    button.disabled = false; // Disable the save button
+                    buttonCancel.disabled = false; 
+                    //closeModal()
+                    //alert("Error: " + JSON.parse(xhr.responseText).message); // Show error message
+                    document.getElementById("edit-id_pinjam").value = idPinjam; // Keep track of id_pinjam
+                    document.getElementById("editModal").style.display = "block"; // Show the modal
+                }
+            };
+        
+            xhr.send(JSON.stringify({ id_pinjam: idPinjam }));
+        }
+     
+        function saveReminder(idPinjam) {
+            var idPinjam = document.getElementById("edit-id_pinjam").value;
+            var remarks = document.getElementById("remarks").value;            
+        
+            // Make AJAX call to save the remarks
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/updateReminder", true);
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    alert("Remarks updated successfully!");
+                    closeModal(); // Optionally close the modal
+                } else {
+                    alert("Failed to update remarks.");
+                }
+            };
+        
+            xhr.send(JSON.stringify({ id_pinjam: idPinjam, remarks: remarks }));
+        }
+      
+        function closeModal() {
+            document.getElementById("editModal").style.display = "none";
+            document.getElementById("save-btn").disabled = true; // Disable the Save button
+            document.getElementById("cancel-btn").disabled = true; // Disable the Cancel button
+            document.getElementById("remarks").value = ""; // Clear the remarks field
+        }
+       
+      
+    </script>
+</head>
+<body>
+    <p>Staff yang bertugas hari ini: {{ date_str }}</p>    
+    <p>ID Staff: {{ id_staff }}</p>
+    <p>Nama: {{ nama_staff }}</p>
+    <h2>---------------------------------------------</h2>    
+
+    {% if msg %}
+        <div class="alert alert-warning">{{ msg }}</div>
+    {% endif %}
+
+    <form>
+        <h2>Reminder Buku Yang Masih Dipinjam :</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Pinjam</th>
+                    <th>Tanggal Pinjam</th>
+                    <th>Telat (hari)</th>
+                    <th>Denda</th>
+                    <th>ID Anggota</th>
+                    <th>Nama Anggota</th>
+                    <th>ID Buku</th>
+                    <th>Judul</th>
+                    <th>Penulis</th>
+                    <th>Penerbit</th>
+                    <th>Tahun Terbit</th>                    
+                    <th>Stock Buku</th>
+                    <th>No. Rak</th>
+                    <th>Staff Reminder</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in akunbuku %}
+                <tr data-id="{{ book.id_pinjam }}">
+                    <td>{{ book.id_pinjam }}</td>
+                    <td>{{ book.tanggal_pinjam }}</td>
+                    <td>{{ book.keterlambatan }}</td>  
+                    <td>{{ book.dendanya }}</td>        
+                    <td>{{ book.id_anggota }}</td>
+                    <td>{{ book.nama_anggota}}</td>
+                    <td>{{ book.id_buku }}</td>
+                    <td>{{ book.judul_buku }}</td>
+                    <td>{{ book.penulis }}</td>
+                    <td>{{ book.penerbit }}</td>
+                    <td>{{ book.tahun_terbit }}</td>                    
+                    <td>{{ book.jml_buku }}</td>
+                    <td>{{ book.no_rak }}</td>
+                    <td>
+                        <button type="button" id="remindered-btn-{{ book.id_pinjam }}" class="remindered-btn" onclick="addEditReminder('{{ book.id_pinjam }}')">Add/Edit Reminder</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Modal for Editing Reminders -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">               
+                <span class="close" onclick="closeModal()">&times;</span>                
+                <input type="hidden" id="edit-id_pinjam">
+                <label for="remarks">Add/Edit Reminder:</label><br>                
+                <textarea id="remarks" name="remarks" rows="2" cols="50"></textarea>                
+                <br>
+                <button id="save-btn" onclick="saveReminder()">Save</button>                                
+                <button id="cancel-btn" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>       
+    </form>
+    <br><br>
+    <a href="{{ url_for('homestaff') }}">
+        <button>Kembali</button>
+    </a>
+</body>
+</html>

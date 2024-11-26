@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+
+{% block title %}Profil{% endblock %}
+
+{% block content %}
+<h2>Detail Profil Anggota</h2>
+<div>
+    <p>Detail akun kamu ada dibawah ini:</p>
+    <table>
+        <tr>
+            <td>Id Anggota</td>
+            <td>: {{ account['id_anggota'] }}</td>
+        </tr>
+        <tr>
+            <td>Nama</td>
+            <td>: {{ account['nama_anggota'] }}</td>
+        </tr>
+        <tr>
+            <td>No. Telp.</td>
+            <td>: {{ account['no_telp_anggota'] }}</td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td>: {{ account['email_anggota'] }}</td>
+        </tr>
+        
+    </table>
+</div>
+{% endblock %}

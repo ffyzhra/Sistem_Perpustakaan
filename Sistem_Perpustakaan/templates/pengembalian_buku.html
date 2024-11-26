@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pengembalian Buku</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .delete-btn {
+            color: red;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function pengembalian(idPinjam, idBuku, tanggalPinjam) {
+            if (confirm("Anda yakin akan mengembalikan buku ini?")) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/pengembalian", true);
+                xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        var row = document.querySelector(`tr[data-id='${idPinjam}']`);
+                        if (row) {
+                            row.parentNode.removeChild(row);
+                            alert("Silahkan untuk ke Staff dan konfirmasi pengembalian beserta fisik bukunya");
+                        }
+                    } else {
+                        alert("Error deleting record");
+                    }
+                };
+
+                // Send the data including tanggal_pinjam
+                xhr.send(JSON.stringify({ id_pinjam: idPinjam, id_buku: idBuku, tanggal_pinjam: tanggalPinjam}));
+            }
+        }
+    </script>
+</head>
+<body>
+    <p>ID Anggota: {{ id_anggota }}</p>
+    <p>Nama: {{ nama_anggota }}</p>
+    <h2>--------------------------------------------------</h2> 
+
+    {% if msg %}
+        <div class="alert alert-warning">{{ msg }}</div>
+    {% endif %}
+
+    <form>
+        <h2>Pengembalian Buku Yang Dipinjam</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Pinjam</th>
+                    <th>Tanggal Peminjaman</th>
+                    <th>ID Buku</th>
+                    <th>Judul</th>
+                    <th>Penulis</th>
+                    <th>Penerbit</th>
+                    <th>Tahun Terbit</th>
+                    <th>Jumlah Halaman</th>
+                    <th>Stock Buku Hari ini</th>
+                    <th>No. Rak</th>                    
+                    <th>Pengembalian Buku</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for book in akunbuku %}
+                <tr data-id="{{ book.id_pinjam }}">
+                    <td>{{ book.id_pinjam }}</td>
+                    <td>{{ book.tanggal_pinjam }}</td>
+                    <td>{{ book.id_buku }}</td>
+                    <td>{{ book.judul_buku }}</td>
+                    <td>{{ book.penulis }}</td>
+                    <td>{{ book.penerbit }}</td>
+                    <td>{{ book.tahun_terbit }}</td>
+                    <td>{{ book.jml_halaman }}</td>
+                    <td>{{ book.jml_buku }}</td>
+                    <td>{{ book.no_rak }}</td>                    
+                    <td><span class="delete-btn" onclick="pengembalian('{{ book.id_pinjam }}', '{{ book.id_buku }}', '{{ book.tanggal_pinjam }}')">Dikembalikan</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+    <br><br>
+    <a href="{{ url_for('home') }}">
+        <button>Tutup</button>
+    </a>
+</body>
+</html>

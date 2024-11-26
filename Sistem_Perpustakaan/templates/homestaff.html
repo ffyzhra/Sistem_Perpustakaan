@@ -1,0 +1,49 @@
+{% extends 'layoutstaff.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h2>Beranda</h2>
+<br/>Tanggal: {{current_date}}
+<div style="position: fixed; width: 250px; height: calc(100% - 30px); background-color: #333; top: 30px; left: -250px; transition: left 0.3s; z-index: 1000; overflow-y: auto;" id="sidebar">
+    <a href="{{ url_for('browseanggotastaffmenu') }}" style="color: white; padding: 8px 15px; text-decoration: none; display: block;">Browse Anggota</a> 
+    <a href="{{ url_for('browsebukustaffmenu') }}" style="color: white; padding: 8px 15px; text-decoration: none; display: block;">Browse Buku</a> 
+    <a href="{{ url_for('browsestaffstaffmenu') }}" style="color: white; padding: 8px 15px; text-decoration: none; display: block;">Browse Staff</a>     
+    <hr>
+    <a href="{{ url_for('registrasibuku') }}" style="color: white; padding: 8px 15px; text-decoration: none; display: block;">Input Buku</a>
+    <a href="{{ url_for('edtbuku') }}" style="color: white; padding: 8px 15px; text-decoration: none; display: block;">Edit Buku</a>
+    <a href="{{ url_for('delbuku') }}" style="color: white; padding: 8px 15px; text-decoration: none; display: block;">Hapus Buku</a>
+    <hr>
+    <a href="{{ url_for('konfirmasi_peminjaman') }}" style="color: white; padding: 8px 15px; text-decoration: none; display: block;">Konfirmasi Peminjaman Buku</a>
+    <a href="{{ url_for('konfirmasi_pengembalian') }}" style="color: white; padding: 8px 15px; text-decoration: none; display: block;">Konfirmasi Pengembalian Buku</a>
+    <hr>
+    <a href="{{ url_for('reminder_peminjaman') }}" style="color: white; padding: 8px 15px; text-decoration: none; display: block;">Reminder untuk peminjam</a>
+    <hr>
+    <a href="{{ url_for('registrasistaff') }}" style="color: white; padding: 8px 15px; text-decoration: none; display: block;">Tambah Staff Baru</a>
+    <a href="{{ url_for('edtstaff') }}" style="color: white; padding: 8px 15px; text-decoration: none; display: block;">Edit Data Staff</a>
+    <a href="{{ url_for('chpwdstaff') }}" style="color: white; padding: 8px 15px; text-decoration: none; display: block;">Ganti Password Staff</a>
+    <hr>
+    <a href="#" onclick="toggleSidebar()" style="color: white; padding: 8px 15px; text-decoration: none; display: block;">&times; Tutup</a>
+</div>
+<p>Selamat datang kembali Staff, {{ nama_staff }} ({{id_staff}})!</p>
+
+<div style="margin-left: 0px;">
+    <div onclick="toggleSidebar()" style="font-size: 20px; cursor: pointer; margin: 20px;">
+        <i class="fas fa-bars"></i> <strong>Menu Utama</strong>
+    </div>
+</div>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.style.left = (sidebar.style.left === '0px') ? '-250px' : '0px';
+    }
+</script>
+<h2>System reminder:</h2>
+<li>Peminjaman buku yang harus di-konfirmasi = {{ hasilPeminjaman }}</li>
+<li>Pengembalian buku yang harus di-konfirmasi = {{ hasilPengembalian }}</li>
+<h3>Informasi tentang Peminjaman:</h3>
+<li>Total buku yang dipinjam dan sudah dikonfirmasi oleh staff = {{ bukuYangMasihDiPinjam }}</li>
+<li>Total buku yang terlambat dikembalikan = {{ bukuYangTerlambat }}</li>
+<li>Total buku yang harus kembali hari ini = {{ bukuYangHarusKembali }}</li>
+{% endblock %}

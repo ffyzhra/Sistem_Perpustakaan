@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Ubah Password</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+	</head>	
+	<body>
+		<body>
+			<div class="login">
+				<h1>Ubah Password</h1>
+				
+				<form action="{{ url_for('chpwd') }}" method="post">	
+					<label for="idanggota">
+						<i class="fas fa-user"></i>
+					</label>
+					<input type="text" name="idanggota" placeholder="ID Anggota" id="idanggota" value="{{ id_anggota }}" class="read-only" readonly>
+					<label for="password">
+						<i class="fas fa-lock"></i>		
+					</label>			
+					<input type="password" name="passwordbr" placeholder="Masukkan Password Baru" id="passwordbr" required>
+					</label>	
+					<label for="password">
+						<i class="fas fa-lock"></i>		
+					</label>			
+					<input type="password" name="passwordbr1" placeholder="Ulangi Password Baru" id="passwordbr1" required>
+					</label>	
+					<!--<p>Id Anggota: {{ id_anggota }} ({{nama_anggota}})</p>	-->	
+
+					<div class="msg">{{ msg }}</div>
+					<input type="submit" value="Ubah">
+					<div class="links">						
+						<a href="{{ url_for('home') }}">Batal</a>					
+					</div> 
+				</form>
+			</div>
+		</body>
+	</body>
+</html>

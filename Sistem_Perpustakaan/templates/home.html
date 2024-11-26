@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h2>Beranda</h2>
+
+<p>Selamat datang kembali, {{ nama_anggota }} ({{ id_anggota }})!</p>
+<div style="position: fixed; width: 250px; height: 100%; background-color: #333; top: 30px; left: -250px; transition: left 0.3s; z-index: 1000;" id="sidebar">
+    <a href="{{ url_for('browseanggota') }}" style="color: white; padding: 15px; text-decoration: none; display: block;">Browse Anggota</a> 
+    <a href="{{ url_for('browsebuku') }}" style="color: white; padding: 15px; text-decoration: none; display: block;">Browse Buku</a>     
+    <hr>
+    <a href="{{ url_for('edtanggota') }}" style="color: white; padding: 15px; text-decoration: none; display: block;">Edit Data Anggota</a>
+    <a href="{{ url_for('chpwd') }}" style="color: white; padding: 15px; text-decoration: none; display: block;">Ganti Password</a>
+    
+    <hr>
+    <a href="{{ url_for('peminjaman') }}" style="color: white; padding: 15px; text-decoration: none; display: block;">Peminjaman Buku</a>
+    <a href="{{ url_for('pengembalian_buku') }}" style="color: white; padding: 15px; text-decoration: none; display: block;">Pengembalian Buku</a>    
+    <hr>
+    <a href="#" onclick="toggleSidebar()" style="color: white; padding: 15px; text-decoration: none; display: block;">&times; Tutup</a>
+</div>
+
+<div style="margin-left: 0px;">
+    <div onclick="toggleSidebar()" style="font-size: 20px; cursor: pointer; margin: 20px;">
+        <i class="fas fa-bars"></i> <strong>Menu Utama</strong>    
+</div>
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.style.left = (sidebar.style.left === '0px') ? '-250px' : '0px';
+    }
+</script>
+
+{% if akunpeminjaman %}
+    <h2>System reminder: Buku yang Dipinjam</h2>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>ID Peminjaman</th>
+                <th>Tanggal Pinjam</th>
+                <th>Tanggal Kembali</th>
+                <th>Judul Buku</th>                
+                <th>Konfirmasi dari Staff</th>
+            </tr>
+        </thead>
+        <tbody>            
+            {% for pinjam in akunpeminjaman %}
+            <tr>
+                <td>{{ pinjam.id_pinjam }}</td>
+                <td>{{ pinjam.tanggal_pinjam.strftime('%d %B %Y') }}</td>
+                <td>{{ pinjam.tanggal_kembali.strftime('%d %B %Y') }}</td>
+                <td>{{ pinjam.judul_buku }}</td>               
+                <td>{{ 'Sudah' if pinjam.id_staff not in [None, ''] else 'Belum' }}</td>                
+            </tr>            
+            {% endfor %}
+        </tbody>
+    </table>
+    <h2></h2>
+    {% for reminder in reminders %}
+        <li>{{ reminder|safe }}</li>
+        {% endfor %}
+
+    <h3>Reminder dari Staff:</h3>
+    
+    {% for pinjam in akunpeminjaman %}   
+        {% if pinjam.remarks %}   
+            <li>{{ pinjam.tgl_reminder.strftime('%d %B %Y') }} ID Pinjam: {{ pinjam.id_pinjam }}. {{ pinjam.remarks }} ({{ pinjam.id_staff }})</li>
+        {% endif %}
+    {% endfor %}
+    
+{% else %}
+    <p>Tidak ada buku yang dipinjam.</p>
+{% endif %}
+
+{% endblock %}
